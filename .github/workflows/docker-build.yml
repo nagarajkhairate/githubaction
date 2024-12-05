@@ -46,8 +46,12 @@ jobs:
         run: |
           curl http://localhost:5000
 
-      - name: Stop Docker container
+      - name: Stop Docker container if running
         run: |
-          docker ps -q | xargs docker stop
-
-          docker ps -q | xargs docker stop
+          container_id=$(docker ps -q)
+          if [ -n "$container_id" ]; then
+            echo "Stopping Docker container..."
+            docker stop $container_id
+          else
+            echo "No running containers to stop."
+          fi
