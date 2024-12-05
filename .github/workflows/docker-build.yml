@@ -19,16 +19,27 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t task-manager .
-      
+
       - name: Run Docker container
         run: |
           docker run -d -p 5000:5000 task-manager
-          
-      - name: Test application (you can write tests using curl or similar)
+
+      - name: Wait for the Flask app to be available
         run: |
-          sleep 10
-          curl http://localhost:5000  # Check if the app is running
-          
+          for i in {1..10}; do
+            if curl -s http://localhost:5000; then
+              echo "Flask app is up and running!"
+              break
+            fi
+            echo "Waiting for Flask app to be ready..."
+            sleep 3
+          done
+
+      - name: Test application
+        run: |
+          curl http://localhost:5000
+
       - name: Stop Docker container
         run: |
           docker ps -q | xargs docker stop
+
