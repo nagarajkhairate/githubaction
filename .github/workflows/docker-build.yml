@@ -27,8 +27,8 @@ jobs:
           
       - name: Get Docker container logs
         run: |
-          # Get the container name from docker ps and then fetch the logs of that container
-          container_id=$(docker ps --filter "ancestor=task-manager" -q)  # Get the container ID of the task-manager image
+          # Get the container ID of the task-manager image and fetch the logs
+          container_id=$(docker ps --filter "ancestor=task-manager" -q)
           docker logs $container_id  # Fetch logs from the container
 
       - name: Wait for the Flask app to be available
@@ -48,4 +48,6 @@ jobs:
 
       - name: Stop Docker container
         run: |
+          docker ps -q | xargs docker stop
+
           docker ps -q | xargs docker stop
