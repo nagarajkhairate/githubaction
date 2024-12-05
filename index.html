@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+</head>
+<body>
+    <h1>Task Manager</h1>
+
+    <form action="/add" method="POST">
+        <input type="text" name="title" placeholder="Enter task" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <h2>Tasks:</h2>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <span style="text-decoration: {% if task.completed %}line-through{% endif %}">{{ task.title }}</span>
+                <a href="/update/{{ task.id }}">Toggle Completed</a> | 
+                <a href="/delete/{{ task.id }}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
