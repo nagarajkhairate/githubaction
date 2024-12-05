@@ -1,0 +1,37 @@
+name: Build and Run Docker Image for Flask App
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to the main branch
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest  # Specify Ubuntu runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Check out the code from the repository
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2  # Set up Docker Buildx to enable multi-platform support
+
+      - name: Build Docker image
+        run: |
+          docker build -t hello-pradeepit-web .  # Build the Docker image from the current directory
+
+      - name: Run Docker container
+        run: |
+          docker run -d -p 5000:5000 hello-pradeepit-web  # Run the container in detached mode
+
+      - name: Wait for the app to start
+        run: sleep 15  # Wait a little longer to give the app time to start
+
+      - name: Test Flask app is running
+        run: |
+          # Retry curl to ensure it works after the app starts
+          for i in {1..5}; do curl --fail http://localhost:5000 && break || sleep 5; done
+
+      - name: Stop Docker container
+        run: |
+          docker ps -q | xargs docker stop  # Stop any running containers after the test
