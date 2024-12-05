@@ -1,4 +1,4 @@
-name: Build and Test Flask App
+name: Build, Test, and Push Flask App
 
 on:
   push:
@@ -16,19 +16,27 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_HUB_USERNAME }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
       - name: Build Docker image
         run: |
-          docker build -t task-manager .
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/task-manager:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/task-manager:latest
 
       - name: Run Docker container
         run: |
-          docker run -d -p 5000:5000 task-manager  # Run container in detached mode
+          docker run -d -p 5000:5000 ${{ secrets.DOCKER_HUB_USERNAME }}/task-manager:latest  # Run container in detached mode
           docker ps -a  # Check running containers
           
       - name: Get Docker container logs
         run: |
           # Get the container ID of the task-manager image and fetch the logs
-          container_id=$(docker ps --filter "ancestor=task-manager" -q)
+          container_id=$(docker ps --filter "ancestor=${{ secrets.DOCKER_HUB_USERNAME }}/task-manager:latest" -q)
           docker logs $container_id  # Fetch logs from the container
 
       - name: Wait for the Flask app to be available
