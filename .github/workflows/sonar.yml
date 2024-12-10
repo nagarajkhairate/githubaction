@@ -21,9 +21,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Navigate to project directory
-        run: cd path/to/your/project
-
       - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
